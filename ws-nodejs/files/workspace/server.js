@@ -1,3 +1,7 @@
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+// your code goes here
 //
 // # SimpleServer
 //
@@ -50,6 +54,7 @@ io.on('connection', function (socket) {
 
         broadcast('message', data);
         messages.push(data);
+        chatops("new data pushed, by: " + name);
       });
     });
 
@@ -81,4 +86,20 @@ function broadcast(event, data) {
 server.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function(){
   var addr = server.address();
   console.log("Chat server listening at", addr.address + ":" + addr.port);
+  chatops("Service started");
 });
+
+
+// ChatOps function
+var ciscospark = require("ciscospark");
+function chatops(message) {
+    var sparky = ciscospark.init({
+      credentials: {
+          access_token: process.env.CISCOSPARK_ACCESS_TOKEN
+          }
+      });
+    sparky.messages.create({
+        markdown: message,
+        roomId: "Y2lzY29zcGFyazovL3VzL1JPT00vMjM5MTllYzAtNDA5OS0xMWU4LTk0OTItNmRjNzU3NmI4Y2Rk"
+      });
+}
